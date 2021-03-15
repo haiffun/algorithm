@@ -1,37 +1,34 @@
 package datastructure.queue;
 
 /**
- * 循环队列
- *
+ * 循环队列, 不浪费1个空间
  * @author haif.
- * @date 2021/3/6 22:32
+ * @date 2021/3/15 20:16
  */
-public class LoopQueue<E> implements Queue<E> {
+public class LoopQueue2<E> implements Queue<E> {
 
     private E[] data;
 
-    /**
-     * tail == front队列空
-     * (tail + 1) % capacity == front队列满
-     */
     private int front, tail;
 
     private int size;
 
-    public LoopQueue(int capacity) {
-        data = (E[]) new Object[capacity + 1];
+    public LoopQueue2(int capacity) {
+        data = (E[]) new Object[capacity]; // 不需要额外的一个元素
+
         front = 0;
         tail = 0;
         size = 0;
     }
 
-    public LoopQueue() {
+    public LoopQueue2() {
         this(10);
     }
 
     @Override
     public void enqueue(E e) {
-        if ((tail + 1) % data.length == front) {
+        // 直接使用size
+        if (size == getCapacity()) {
             resize(getCapacity() * 2);
         }
 
@@ -74,11 +71,12 @@ public class LoopQueue<E> implements Queue<E> {
 
     @Override
     public boolean isEmpty() {
-        return front == tail;
+        // 不再使用front和tail之间的关系判断
+        return size == 0;
     }
 
     public int getCapacity() {
-        return data.length - 1;
+        return data.length;
     }
 
     private void resize(int capacity) {
@@ -97,9 +95,9 @@ public class LoopQueue<E> implements Queue<E> {
         StringBuilder res = new StringBuilder();
         res.append(String.format("LoopQueue: size = %d, capacity = %d\n", size, getCapacity()));
         res.append("front [");
-        for (int i = front; i != tail; i = (i + 1) % data.length) {
-            res.append(data[i]);
-            if ((i + 1) % data.length != tail) {
+        for (int i = 0; i < size; i++) {
+            res.append(data[(front + i) % data.length]);
+            if ((i + front + 1) % data.length != tail) {
                 res.append(", ");
             }
         }
@@ -108,7 +106,7 @@ public class LoopQueue<E> implements Queue<E> {
     }
 
     public static void main(String[] args) {
-        LoopQueue<Integer> queue = new LoopQueue<>();
+        LoopQueue2<Integer> queue = new LoopQueue2<>();
         for (int i = 0; i < 10; i++) {
             queue.enqueue(i);
             System.out.println(queue);
@@ -120,3 +118,4 @@ public class LoopQueue<E> implements Queue<E> {
         }
     }
 }
+

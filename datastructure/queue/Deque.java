@@ -1,37 +1,34 @@
 package datastructure.queue;
 
 /**
- * 循环队列
+ * 双端队列
  *
  * @author haif.
- * @date 2021/3/6 22:32
+ * @date 2021/3/15 20:49
  */
-public class LoopQueue<E> implements Queue<E> {
+public class Deque<E> implements Queue<E> {
 
     private E[] data;
 
-    /**
-     * tail == front队列空
-     * (tail + 1) % capacity == front队列满
-     */
     private int front, tail;
 
     private int size;
 
-    public LoopQueue(int capacity) {
-        data = (E[]) new Object[capacity + 1];
+    public Deque(int capacity) {
+        data = (E[])new Object[capacity];
+
         front = 0;
         tail = 0;
         size = 0;
     }
 
-    public LoopQueue() {
+    public Deque() {
         this(10);
     }
 
     @Override
     public void enqueue(E e) {
-        if ((tail + 1) % data.length == front) {
+        if (size == getCapacity()) {
             resize(getCapacity() * 2);
         }
 
@@ -60,11 +57,7 @@ public class LoopQueue<E> implements Queue<E> {
 
     @Override
     public E getFront() {
-        if (isEmpty()) {
-            throw new IllegalArgumentException("Cannot dequeue from empty queue.");
-        }
-
-        return data[front];
+        return null;
     }
 
     @Override
@@ -74,15 +67,50 @@ public class LoopQueue<E> implements Queue<E> {
 
     @Override
     public boolean isEmpty() {
-        return front == tail;
+        return size == 0;
     }
 
     public int getCapacity() {
-        return data.length - 1;
+        return data.length;
+    }
+
+    public void addFront(E e) {
+        if (size == getCapacity()) {
+            resize(getCapacity() * 2);
+        }
+
+        data[(front - 1 + data.length) % data.length] = e;
+        front = (front - 1 + data.length) % data.length;
+        size++;
+    }
+
+    public E removeFront() {
+        return dequeue();
+    }
+
+    public void addLast(E e) {
+        enqueue(e);
+    }
+
+    public E removeLast() {
+        if (isEmpty()) {
+            throw new IllegalArgumentException("Cannot removeLast from empty queue.");
+        }
+
+        E ret = data[tail];
+        data[tail] = null;
+        tail = (tail - 1 + data.length) % data.length;
+        size--;
+
+        if (size == getCapacity() / 4 && getCapacity() / 2 != 0) {
+            resize(getCapacity() / 2);
+        }
+
+        return ret;
     }
 
     private void resize(int capacity) {
-        E[] newData = (E[]) new Object[capacity + 1];
+        E[] newData = (E[]) new Object[capacity];
         for (int i = 0; i < size; i++) {
             newData[i] = data[(i + front) % data.length];
         }
@@ -97,9 +125,9 @@ public class LoopQueue<E> implements Queue<E> {
         StringBuilder res = new StringBuilder();
         res.append(String.format("LoopQueue: size = %d, capacity = %d\n", size, getCapacity()));
         res.append("front [");
-        for (int i = front; i != tail; i = (i + 1) % data.length) {
-            res.append(data[i]);
-            if ((i + 1) % data.length != tail) {
+        for (int i = 0; i < size; i++) {
+            res.append(data[(i + front) % data.length]);
+            if ((i + front + 1) % data.length != tail) {
                 res.append(", ");
             }
         }
@@ -108,7 +136,7 @@ public class LoopQueue<E> implements Queue<E> {
     }
 
     public static void main(String[] args) {
-        LoopQueue<Integer> queue = new LoopQueue<>();
+        Deque<Integer> queue = new Deque<>();
         for (int i = 0; i < 10; i++) {
             queue.enqueue(i);
             System.out.println(queue);
@@ -118,5 +146,14 @@ public class LoopQueue<E> implements Queue<E> {
                 System.out.println(queue);
             }
         }
+
+        queue.addFront(10);
+        System.out.println(queue);
+        queue.addLast(11);
+        System.out.println(queue);
+        queue.removeLast();
+        System.out.println(queue);
+        queue.removeFront();
+        System.out.println(queue);
     }
 }

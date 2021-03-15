@@ -1,12 +1,11 @@
 package datastructure.queue;
 
 /**
- * 循环队列
- *
+ * 循环队列, 不使用size
  * @author haif.
- * @date 2021/3/6 22:32
+ * @date 2021/3/15 20:33
  */
-public class LoopQueue<E> implements Queue<E> {
+public class LoopQueue3<E> implements Queue<E> {
 
     private E[] data;
 
@@ -16,16 +15,13 @@ public class LoopQueue<E> implements Queue<E> {
      */
     private int front, tail;
 
-    private int size;
-
-    public LoopQueue(int capacity) {
+    public LoopQueue3(int capacity) {
         data = (E[]) new Object[capacity + 1];
         front = 0;
         tail = 0;
-        size = 0;
     }
 
-    public LoopQueue() {
+    public LoopQueue3() {
         this(10);
     }
 
@@ -37,7 +33,6 @@ public class LoopQueue<E> implements Queue<E> {
 
         data[tail] = e;
         tail = (tail + 1) % data.length;
-        size++;
     }
 
     @Override
@@ -49,9 +44,8 @@ public class LoopQueue<E> implements Queue<E> {
         E ret = data[front];
         data[front] = null;
         front = (front + 1) % data.length;
-        size--;
 
-        if (size == getCapacity() / 4 && getCapacity() / 2 != 0) {
+        if (getSize() == getCapacity() / 4 && getCapacity() / 2 != 0) {
             resize(getCapacity() / 2);
         }
 
@@ -69,7 +63,7 @@ public class LoopQueue<E> implements Queue<E> {
 
     @Override
     public int getSize() {
-        return size;
+        return tail >= front ? tail - front : tail - front + data.length;
     }
 
     @Override
@@ -83,19 +77,20 @@ public class LoopQueue<E> implements Queue<E> {
 
     private void resize(int capacity) {
         E[] newData = (E[]) new Object[capacity + 1];
-        for (int i = 0; i < size; i++) {
+        int sz = getSize();
+        for (int i = 0; i < sz; i++) {
             newData[i] = data[(i + front) % data.length];
         }
 
         data = newData;
         front = 0;
-        tail = size;
+        tail = sz;
     }
 
     @Override
     public String toString() {
         StringBuilder res = new StringBuilder();
-        res.append(String.format("LoopQueue: size = %d, capacity = %d\n", size, getCapacity()));
+        res.append(String.format("LoopQueue: size = %d, capacity = %d\n", getSize(), getCapacity()));
         res.append("front [");
         for (int i = front; i != tail; i = (i + 1) % data.length) {
             res.append(data[i]);
@@ -108,7 +103,7 @@ public class LoopQueue<E> implements Queue<E> {
     }
 
     public static void main(String[] args) {
-        LoopQueue<Integer> queue = new LoopQueue<>();
+        LoopQueue3<Integer> queue = new LoopQueue3<>();
         for (int i = 0; i < 10; i++) {
             queue.enqueue(i);
             System.out.println(queue);
@@ -120,3 +115,4 @@ public class LoopQueue<E> implements Queue<E> {
         }
     }
 }
+

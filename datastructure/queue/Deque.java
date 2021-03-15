@@ -123,7 +123,7 @@ public class Deque<E> implements Queue<E> {
     @Override
     public String toString() {
         StringBuilder res = new StringBuilder();
-        res.append(String.format("LoopQueue: size = %d, capacity = %d\n", size, getCapacity()));
+        res.append(String.format("Deque: size = %d, capacity = %d\n", size, getCapacity()));
         res.append("front [");
         for (int i = 0; i < size; i++) {
             res.append(data[(i + front) % data.length]);

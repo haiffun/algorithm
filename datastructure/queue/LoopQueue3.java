@@ -90,7 +90,7 @@ public class LoopQueue3<E> implements Queue<E> {
     @Override
     public String toString() {
         StringBuilder res = new StringBuilder();
-        res.append(String.format("LoopQueue: size = %d, capacity = %d\n", getSize(), getCapacity()));
+        res.append(String.format("LoopQueue3: size = %d, capacity = %d\n", getSize(), getCapacity()));
         res.append("front [");
         for (int i = front; i != tail; i = (i + 1) % data.length) {
             res.append(data[i]);
